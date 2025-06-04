@@ -10,7 +10,7 @@ This project provides a Streamlit application to visualize cryptocurrency prices
 ## Setup
 
 ```bash
-pip install streamlit requests pandas
+pip install streamlit requests pandas streamlit-image-select
 ```
 
 ## Running the app
@@ -19,4 +19,4 @@ pip install streamlit requests pandas
 streamlit run app.py
 ```
 
-The app lets you search for a cryptocurrency by name or symbol and displays a 5-day USD price chart along with the coin's image.
+The app lets you search for a cryptocurrency by name or symbol and displays a 5-day USD price chart. Coin images and IDs appear in the selector so you can easily pick the desired coin.
