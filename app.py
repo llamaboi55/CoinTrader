@@ -9,7 +9,18 @@ def get_coin_list():
     return resp.json()
 
 @st.cache_data
-def get_market_chart(coin_id, days=30):
+def get_coin_data(coin_id):
+    resp = requests.get(f'https://api.coingecko.com/api/v3/coins/{coin_id}')
+    resp.raise_for_status()
+    data = resp.json()
+    return {
+        'name': data['name'],
+        'symbol': data['symbol'],
+        'image': data['image']['large']
+    }
+
+@st.cache_data
+def get_market_chart(coin_id, days=5):
     resp = requests.get(
         f'https://api.coingecko.com/api/v3/coins/{coin_id}/market_chart',
         params={'vs_currency': 'usd', 'days': str(days)}
@@ -38,6 +49,8 @@ selected = st.selectbox(
 )
 
 if selected:
+    coin = get_coin_data(selected['id'])
+    st.image(coin['image'], width=64)
     df = get_market_chart(selected['id'])
-    st.write(f"Price data for {selected['name']} (USD)")
+    st.write(f"Price data for {coin['name']} (USD)")
     st.line_chart(data=df.set_index('date')['price'])

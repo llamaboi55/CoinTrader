@@ -19,4 +19,4 @@ pip install streamlit requests pandas
 streamlit run app.py
 ```
 
-The app lets you search for a cryptocurrency by name or symbol and displays a 30‑day USD price chart.
+The app lets you search for a cryptocurrency by name or symbol and displays a 5-day USD price chart along with the coin's image.
