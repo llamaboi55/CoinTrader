@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 import streamlit as st
+from streamlit_image_select import image_select
 
 @st.cache_data
 def get_coin_list():
@@ -14,9 +15,10 @@ def get_coin_data(coin_id):
     resp.raise_for_status()
     data = resp.json()
     return {
+        'id': coin_id,
         'name': data['name'],
         'symbol': data['symbol'],
-        'image': data['image']['large']
+        'image': data['image'].get('thumb') or data['image'].get('large')
     }
 
 @st.cache_data
@@ -42,15 +44,22 @@ if query:
 else:
     filtered = coins
 
-selected = st.selectbox(
-    'Select a coin',
-    filtered,
-    format_func=lambda c: f"{c['name']} ({c['symbol'].upper()})"
-)
+# Only show a limited number of results for performance
+filtered = filtered[:20]
 
-if selected:
-    coin = get_coin_data(selected['id'])
+coin_infos = [get_coin_data(c['id']) for c in filtered]
+
+if coin_infos:
+    idx = image_select(
+        label='Select a coin',
+        images=[c['image'] for c in coin_infos],
+        captions=[f"{c['name']} ({c['id']})" for c in coin_infos],
+        return_value='index'
+    )
+    coin = coin_infos[idx]
     st.image(coin['image'], width=64)
-    df = get_market_chart(selected['id'])
+    df = get_market_chart(coin['id'])
     st.write(f"Price data for {coin['name']} (USD)")
+else:
+    st.write('No matching coins found.')
     st.line_chart(data=df.set_index('date')['price'])
